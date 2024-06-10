@@ -15,8 +15,7 @@ end = 3
 """
 Switch to FeedbackLinearizationController as soon as you implement it
 """
-#controller = FeedbackLinearizationController(Tp)
-controller = DummyController(Tp)
+controller = FeedbackLinearizationController(Tp)
 
 """
 Here you have some trajectory generators. You can use them to check your implementations.
