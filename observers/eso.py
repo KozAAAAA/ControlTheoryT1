@@ -17,7 +17,9 @@ class ESO:
 
     def update(self, q, u):
         self.states.append(copy(self.state))
-        ### TODO implement ESO update
+        z = self.state[: np.newaxis]
+        z_dot = self.A @ z + self.B @ u + (self.L @ (q - self.W @ z))
+        self.state = (z + z_dot * self.Tp).squeeze()
 
     def get_state(self):
         return self.state
