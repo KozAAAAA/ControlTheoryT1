@@ -1,4 +1,4 @@
-from models.manipulator_model import ManipulatorModelF
+from models.manipulator_model import ManipulatorModel
 from .controller import Controller
 
 KP = 1
@@ -6,7 +6,7 @@ KD = 1
 
 class FeedbackLinearizationController(Controller):
     def __init__(self, Tp):
-        self.model = ManipulatorModelF(Tp)
+        self.model = ManipulatorModel(Tp, 1.0, 0.05)
 
     def calculate_control(self, x, q_r, q_r_dot, q_r_ddot):
         """
