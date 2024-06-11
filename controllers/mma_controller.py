@@ -17,8 +17,8 @@ class MMAController(Controller):
         self.u = np.zeros((2, 1))
         self.x = np.zeros((4, 1))
         self.Tp = Tp
-        self.KP = 0.2
-        self.KD = 0.1
+        self.KP = np.array([[1, 0], [0, 1]])
+        self.KD = np.array([[1, 0], [0, 1]])
 
     def choose_model(self, x):
         err = []
@@ -39,7 +39,7 @@ class MMAController(Controller):
         self.choose_model(x)
         q = x[:2]
         q_dot = x[2:]
-        v = q_r_ddot - self.KP * (q - q_r) - self.KD * (q_dot - q_r_dot)
+        v = q_r_ddot - self.KP @ (q - q_r) - self.KD @ (q_dot - q_r_dot)
         M = self.models[self.i].M(x)
         C = self.models[self.i].C(x)
         u = M @ v[:, np.newaxis] + C @ q_dot[:, np.newaxis]
