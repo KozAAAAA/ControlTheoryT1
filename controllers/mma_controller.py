@@ -14,20 +14,35 @@ class MMAController(Controller):
             ManipulatorModel(Tp, 1.0, 0.3),
         ]
         self.i = 0
+        self.u = np.zeros((2, 1))
+        self.x = np.zeros((4, 1))
+        self.Tp = Tp
+        self.KP = 0.2
+        self.KD = 0.1
 
     def choose_model(self, x):
         err = []
         for model in self.models:
             M = model.M(x)
             C = model.C(x)
-            err.append(M @ x[2:, np.newaxis] + C @ x[2:, np.newaxis])
+
+            q_dot = x[2:]
+            q_ddot_pred = np.linalg.inv(M) @ (self.u - C @ q_dot[:, np.newaxis])
+            q_ddot_actual = (q_dot - self.x[2:]) / self.Tp
+
+            err.append(np.linalg.norm(q_ddot_actual - q_ddot_pred.squeeze()))
+
+        self.i = np.argmin(err)
+        print(f"Model {self.i + 1} chosen")
 
     def calculate_control(self, x, q_r, q_r_dot, q_r_ddot):
         self.choose_model(x)
         q = x[:2]
         q_dot = x[2:]
-        v = q_r_ddot  # TODO: add feedback
+        v = q_r_ddot - self.KP * (q - q_r) - self.KD * (q_dot - q_r_dot)
         M = self.models[self.i].M(x)
         C = self.models[self.i].C(x)
         u = M @ v[:, np.newaxis] + C @ q_dot[:, np.newaxis]
+        self.x = x
+        self.u = u
         return u
