@@ -1,5 +1,6 @@
 from models.manipulator_model import ManipulatorModel
 from .controller import Controller
+import numpy as np
 
 KP = 1
 KD = 1
@@ -16,5 +17,5 @@ class FeedbackLinearizationController(Controller):
 
         (q1, q2, q1_dot, q2_dot) = x
         v = q_r_ddot + KP * (q_r - [q1, q2]) + KD * (q_r_dot - [q1_dot, q2_dot])
-        u = self.model.M(x) @ v + self.model.C(x) @ q_r_dot
+        u = self.model.M(x) @ v + self.model.C(x) @ np.array([q1_dot, q2_dot])
         return u
